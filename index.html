@@ -177,12 +177,32 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background-color 0.3s;
-            width: 50%;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .btn:hover {
             background-color: #006699;
+        }
+        
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .btn-meaning {
+            background-color: var(--secondary-color);
+            color: var(--dark-text);
+        }
+        
+        .btn-meaning:hover {
+            background-color: #e6c800;
         }
         
         .modal {
@@ -286,6 +306,103 @@
             color: var(--light-text);
             font-size: 0.9rem;
         }
+        
+        /* ส่วนที่เพิ่มเติมสำหรับ popup ความหมาย */
+        .meaning-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .meaning-content {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .id-meaning-section {
+            margin-top: 15px;
+        }
+        
+        .id-meaning-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+        }
+        
+        .id-meaning-section ul {
+            padding-left: 20px;
+        }
+        
+        .id-meaning-section li {
+            margin-bottom: 8px;
+        }
+        
+        .id-meaning-section .highlight {
+            background-color: #FFF9C4;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .id-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2px;
+            margin: 15px 0;
+        }
+        
+        .id-segment {
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin: 2px;
+        }
+        
+        .segment-1 { 
+            background-color: #FFF9C4; 
+            width: calc(100% / 13 - 4px);
+        }
+        
+        .segment-2-3 { 
+            background-color: #FFCCBC; 
+            width: calc(200% / 13 - 4px);
+        }
+        
+        .segment-4-5 { 
+            background-color: #C8E6C9; 
+            width: calc(200% / 13 - 4px);
+        }
+        
+        .segment-6-10 { 
+            background-color: #B3E5FC; 
+            width: calc(500% / 13 - 4px);
+        }
+        
+        .segment-11-12 { 
+            background-color: #E1BEE7; 
+            width: calc(200% / 13 - 4px);
+        }
+        
+        .segment-13 { 
+            background-color: #FFCDD2; 
+            width: calc(100% / 13 - 4px);
+        }
     </style>
 </head>
 <body>
@@ -329,13 +446,22 @@
             <input type="text" id="id-input" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" maxlength="13">
         </div>
         
-        <div style="display: flex; justify-content: center; width: 100%;">
+        <div class="buttons-container">
             <button class="btn" id="check-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                 </svg>
                 ตรวจสอบ
+            </button>
+            
+            <button class="btn btn-meaning" id="meaning-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                ความหมาย
             </button>
         </div>
         
@@ -385,6 +511,73 @@
         </div>
     </div>
     
+    <!-- เพิ่ม modal สำหรับความหมายเลขบัตรประชาชน -->
+    <div class="meaning-modal" id="meaning-modal">
+        <div class="meaning-content">
+            <span class="close" id="close-meaning-modal">&times;</span>
+            <h2>ความหมายเลขบัตรประชาชน 13 หลัก</h2>
+            
+            <div class="id-diagram">
+                <div class="id-segment segment-1">1</div>
+                <div class="id-segment segment-2-3">23</div>
+                <div class="id-segment segment-4-5">45</div>
+                <div class="id-segment segment-6-10">67890</div>
+                <div class="id-segment segment-11-12">AB</div>
+                <div class="id-segment segment-13">C</div>
+            </div>
+            
+            <div class="id-meaning-section">
+                <h3>หลักที่ 1: ประเภทบุคคล</h3>
+                <ul>
+                    <li><strong>เลข 1</strong> = คนไทย/สัญชาติไทย แจ้งเกิดภายในกำหนดเวลา (ตั้งแต่ 1 ม.ค. 2527)</li>
+                    <li><strong>เลข 2</strong> = คนไทย/สัญชาติไทย แจ้งเกิดเกินกำหนดเวลา 15 วัน</li>
+                    <li><strong>เลข 3</strong> = คนไทย/ต่างด้าว มีชื่ออยู่ในทะเบียนบ้าน (ก่อน 31 พ.ค. 2527)</li>
+                    <li><strong>เลข 4</strong> = คนไทย/ต่างด้าว ที่ย้ายเข้าทะเบียนบ้าน ขณะยังไม่มีเลขบัตรระหว่าง (1 ม.ค. – 31 พ.ค. 2527)</li>
+                    <li><strong>เลข 5</strong> = คนไทย/ต่างด้าว ที่ได้อนุมัติให้เพิ่มชื่อในทะเบียนบ้าน ในกรณีตกสำรวจหรืออื่นๆ</li>
+                    <li><strong>เลข 6</strong> = ต่างด้าวเข้าเมืองถูกกฎหมาย แต่อยู่ชั่วคราว เช่น ชาวต่างชาติแต่งงานกับคนไทย และต่างด้าวที่เข้าเมืองโดยผิดกฎหมาย แต่ได้อนุมัติให้อยู่ได้ เช่น ชนกลุ่มน้อยชายแดน-ชาวเขา</li>
+                    <li><strong>เลข 7</strong> = บุตรของบุคคลประเภทที่ 6 ซึ่งเกิดในประเทศไทย</li>
+                    <li><strong>เลข 8</strong> = ต่างด้าวที่ได้รับสัญชาติไทย</li>
+                    <li><strong>เลข 0</strong> = ผู้ที่ไม่มีสถานะทางทะเบียน</li>
+                    <li><strong>เลข 00</strong> = แรงงานต่างด้าวขึ้นทะเบียน (ตั้งแต่ พ.ศ. 2547)</li>
+                </ul>
+            </div>
+            
+            <div class="id-meaning-section">
+                <h3>หลักที่ 2-3: จังหวัดที่แจ้งเกิดหรือขึ้นทะเบียนบ้าน</h3>
+                <p>ระบุรหัสจังหวัดที่เป็นสถานที่แจ้งเกิดหรือที่ขึ้นทะเบียนบ้าน เช่น</p>
+                <ul>
+                    <li><strong>10</strong> = กรุงเทพมหานคร</li>
+                    <li><strong>12</strong> = นนทบุรี</li>
+                    <li><strong>50</strong> = เชียงใหม่</li>
+                    <li><strong>90</strong> = สงขลา</li>
+                    <li>...</li>
+                </ul>
+            </div>
+            
+            <div class="id-meaning-section">
+                <h3>หลักที่ 4-5: อำเภอ/เทศบาลในจังหวัดนั้น</h3>
+                <p>ระบุรหัสอำเภอหรือเทศบาลในจังหวัดที่แจ้งเกิดหรือขึ้นทะเบียนบ้าน</p>
+            </div>
+            
+            <div class="id-meaning-section">
+                <h3>หลักที่ 6-10: กลุ่มของบุคคลหรือเลขที่ของสูติบัตร</h3>
+                <p>เป็นการจำแนกกลุ่มบุคคลแต่ละประเภท (ตามหลักแรก) หรือเล่มของสูติบัตร</p>
+            </div>
+            
+            <div class="id-meaning-section">
+                <h3>หลักที่ 11-12: ลำดับที่ของบุคคล</h3>
+                <p>เป็นคนที่เท่าไหร่ของบุคคลในแต่ละกลุ่มประเภท หรือในใบที่ของสูติบัตรแต่ละเล่ม</p>
+            </div>
+            
+            <div class="id-meaning-section">
+                <h3>หลักที่ 13: ตัวเลขตรวจสอบความถูกต้อง</h3>
+                <p>ตัวเลขตรวจสอบความถูกต้องของเลขทั้ง 12 หลักแรก (คำนวณด้วยสูตรเฉพาะ)</p>
+                <p><strong>สูตรการคำนวณ:</strong> (11 - (ผลรวมของเลข 12 หลักแรก × ค่าน้ำหนัก) % 11) % 10</p>
+                <p>ค่าน้ำหนักของแต่ละหลัก คือ 13, 12, 11, ..., 2 ตามลำดับ</p>
+            </div>
+        </div>
+    </div>
+    
     <div class="footer">
         <p>ระบบตรวจสอบเลขบัตรประชาชน © 2025</p>
     </div>
@@ -393,9 +586,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             const idInput = document.getElementById('id-input');
             const checkBtn = document.getElementById('check-btn');
+            const meaningBtn = document.getElementById('meaning-btn'); // เพิ่มปุ่มความหมาย
             const result = document.getElementById('result');
             const modal = document.getElementById('modal');
+            const meaningModal = document.getElementById('meaning-modal'); // เพิ่ม modal ความหมาย
             const closeModal = document.getElementById('close-modal');
+            const closeMeaningModal = document.getElementById('close-meaning-modal'); // ปุ่มปิด modal ความหมาย
             const idDisplay = document.getElementById('id-display');
             const idVisual = document.getElementById('id-visual');
             const checksumCalculation = document.getElementById('checksum-calculation');
@@ -458,6 +654,16 @@
                 updateIdDisplay();
             });
             
+            // เพิ่ม Event Listener สำหรับปุ่มความหมาย
+            meaningBtn.addEventListener('click', function() {
+                meaningModal.style.display = 'flex';
+            });
+            
+            // ปิด modal ความหมาย
+            closeMeaningModal.addEventListener('click', function() {
+                meaningModal.style.display = 'none';
+            });
+            
             checkBtn.addEventListener('click', function() {
                 const idNumber = idValue;
                 
@@ -483,7 +689,6 @@
                 modal.style.display = 'flex';
             });
             
-            // Function to clear all input and results
             // Function to clear all input and results
             function clearAllData() {
                 idValue = '';
@@ -536,6 +741,8 @@
                 if (event.target === modal) {
                     modal.style.display = 'none';
                     clearAllData();
+                } else if (event.target === meaningModal) {
+                    meaningModal.style.display = 'none';
                 }
             });
             
@@ -612,16 +819,18 @@
             }
             
             function updateExplanations(id) {
+                // อัพเดตข้อมูลการอธิบายโดยใช้ข้อมูลจากความหมายที่ละเอียดกว่า
                 // First digit explanation
                 const firstDigitMap = {
-                    '1': 'คนที่เกิดและมีสัญชาติไทย',
-                    '2': 'คนต่างด้าวที่มีถิ่นที่อยู่ในประเทศไทย',
-                    '3': 'คนที่มีชื่ออยู่ในทะเบียนบ้านโดยได้รับการยกเว้น',
-                    '4': 'คนที่เข้ามาอยู่ในราชอาณาจักรไทยโดยชอบด้วยกฎหมาย',
-                    '5': 'คนต่างด้าวที่ได้รับอนุญาตให้มีถิ่นที่อยู่ในประเทศไทย',
-                    '6': 'ผู้ไม่มีสัญชาติไทยที่เกิดในประเทศไทยและมีชื่ออยู่ในทะเบียนบ้าน',
-                    '7': 'บุตรของบุคคลประเภทที่ 6',
-                    '8': 'คนต่างด้าวอื่นๆ',
+                    '1': 'คนไทย/สัญชาติไทย แจ้งเกิดภายในกำหนดเวลา (ตั้งแต่ 1 ม.ค. 2527)',
+                    '2': 'คนไทย/สัญชาติไทย แจ้งเกิดเกินกำหนดเวลา 15 วัน',
+                    '3': 'คนไทย/ต่างด้าว มีชื่ออยู่ในทะเบียนบ้าน (ก่อน 31 พ.ค. 2527)',
+                    '4': 'คนไทย/ต่างด้าว ที่ย้ายเข้าทะเบียนบ้าน ขณะยังไม่มีเลขบัตรระหว่าง (1 ม.ค. – 31 พ.ค. 2527)',
+                    '5': 'คนไทย/ต่างด้าว ที่ได้อนุมัติให้เพิ่มชื่อในทะเบียนบ้าน ในกรณีตกสำรวจหรืออื่นๆ',
+                    '6': 'ต่างด้าวเข้าเมืองถูกกฎหมาย แต่อยู่ชั่วคราว หรือต่างด้าวที่เข้าเมืองโดยผิดกฎหมายแต่ได้รับอนุมัติ',
+                    '7': 'บุตรของบุคคลประเภทที่ 6 ซึ่งเกิดในประเทศไทย',
+                    '8': 'ต่างด้าวที่ได้รับสัญชาติไทย',
+                    '0': 'ผู้ที่ไม่มีสถานะทางทะเบียน'
                 };
                 
                 const firstDigit = id.charAt(0);
