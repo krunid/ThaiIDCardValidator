@@ -24,6 +24,21 @@
             flex-direction: column;
             align-items: center;
             color: var(--dark-text);
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://claimdi.com/news/wp-content/uploads/2020/08/116585878_2846942478870591_5470989138026355452_o.jpg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="white" fill-opacity="0" /><path d="M50 15 L75 35 L75 65 L50 85 L25 65 L25 35 Z" fill="white" fill-opacity="0.03" stroke="white" stroke-opacity="0.1" stroke-width="1"/></svg>');
+            background-size: 100px 100px;
+            opacity: 0.6;
+            z-index: 0;
+            pointer-events: none;
         }
         
         .container {
@@ -37,6 +52,8 @@
             display: flex;
             flex-direction: column;
             min-height: 90vh;
+            position: relative;
+            z-index: 1;
         }
         
         .header {
@@ -73,8 +90,8 @@
             padding: 10px;
             text-align: center;
             margin-bottom: 15px;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
+            font-size: 1.3rem;
+            letter-spacing: 0px;
             font-family: 'Courier New', monospace;
             font-weight: bold;
             color: #333;
@@ -280,7 +297,7 @@
         </div>
         
         <div class="input-container">
-            <div class="id-display-container" id="id-display-input"></div>
+            <div class="id-display-container" id="id-display-input">_-____-_____-__-_</div>
             
             <div class="numpad-container">
                 <button class="numpad-btn" data-number="1">1</button>
@@ -303,7 +320,13 @@
             <input type="text" id="id-input" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" maxlength="13">
         </div>
         
-        <button class="btn" id="check-btn">ตรวจสอบ</button>
+        <button class="btn" id="check-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: -3px;">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            ตรวจสอบ
+        </button>
         
         <div class="result" id="result"></div>
     </div>
@@ -396,22 +419,22 @@
             
             function updateIdDisplay() {
                 // Display current ID value
-                let displayValue = idValue;
-                // Pad with underscores if needed
-                while (displayValue.length < 13) {
-                    displayValue += '_';
-                }
+                let displayText = '';
                 
-                // Format with spaces for readability
-                let formattedValue = '';
-                for (let i = 0; i < displayValue.length; i++) {
-                    formattedValue += displayValue[i];
+                for (let i = 0; i < 13; i++) {
+                    if (i < idValue.length) {
+                        displayText += idValue[i];
+                    } else {
+                        displayText += '_';
+                    }
+                    
+                    // Add formatting characters for better readability
                     if (i === 0 || i === 4 || i === 9 || i === 11) {
-                        formattedValue += ' ';
+                        displayText += '-';
                     }
                 }
                 
-                idDisplayInput.textContent = formattedValue;
+                idDisplayInput.textContent = displayText;
             }
             
             // Initialize display
@@ -450,6 +473,7 @@
             });
             
             // Function to clear all input and results
+            // Function to clear all input and results
             function clearAllData() {
                 idValue = '';
                 idInput.value = '';
@@ -457,6 +481,37 @@
                 idDisplay.innerHTML = '';
                 idVisual.innerHTML = '';
                 checksumCalculation.innerHTML = '';
+                
+                // Clear digit group explanations
+                const groups = document.querySelectorAll('.digit-group');
+                groups.forEach(group => {
+                    const explanationElement = group.querySelector('p');
+                    if (explanationElement) {
+                        if (group.classList.contains('group-1')) {
+                            explanationElement.textContent = 'ระบุประเภทของบุคคล เช่น 1 = คนไทย, 2 = คนต่างด้าวที่มีถิ่นที่อยู่ในประเทศไทย';
+                        } else if (group.classList.contains('group-2-3')) {
+                            explanationElement.textContent = 'รหัสของจังหวัดที่เป็นสถานที่แจ้งเกิดหรือที่ขึ้นทะเบียนบ้าน';
+                        } else if (group.classList.contains('group-4-5')) {
+                            explanationElement.textContent = 'รหัสของอำเภอหรือเทศบาลในจังหวัดที่ระบุในหลักที่ 2-3';
+                        } else if (group.classList.contains('group-6-10')) {
+                            explanationElement.textContent = 'เป็นการจำแนกกลุ่มบุคคลแต่ละประเภทหรือเป็นเลขที่ของสูติบัตร';
+                        } else if (group.classList.contains('group-11-12')) {
+                            explanationElement.textContent = 'ลำดับที่ของบุคคลในกลุ่มหรือในสูติบัตรแต่ละเล่ม';
+                        } else if (group.classList.contains('group-13')) {
+                            explanationElement.textContent = 'เป็นเลขที่ใช้ในการตรวจสอบความถูกต้องของเลข 12 หลักแรก';
+                        }
+                    }
+                    
+                    // Show all explanation groups again
+                    group.style.display = 'block';
+                });
+                
+                // Remove any error messages
+                const errorMsg = document.querySelector('.id-explanation > p');
+                if (errorMsg && !errorMsg.classList.contains('digit-group')) {
+                    errorMsg.remove();
+                }
+                
                 updateIdDisplay();
             }
             
@@ -490,16 +545,19 @@
                 idDisplay.innerHTML = '';
                 idVisual.innerHTML = '';
                 
+                // Format ID with dashes for display
+                let formattedId = `${id.substring(0, 1)}-${id.substring(1, 5)}-${id.substring(5, 10)}-${id.substring(10, 12)}-${id.substring(12)}`;
+                
                 // Create header for the ID
                 const header = document.createElement('h3');
-                header.textContent = `เลขบัตรประชาชน: ${id}`;
+                header.textContent = `เลขบัตรประชาชน: ${formattedId}`;
                 idDisplay.appendChild(header);
                 
                 // Status message
                 const status = document.createElement('p');
                 status.textContent = isValid 
-                    ? 'สถานะ: ✅ เลขบัตรประชาชนถูกต้อง' 
-                    : 'สถานะ: ❌ เลขบัตรประชาชนไม่ถูกต้อง';
+                    ? 'สถานะ: ✅ เลขบัตรประชาชนถูกต้องสมบูรณ์' 
+                    : 'สถานะ: ❌ เลขบัตรประชาชนไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
                 status.style.color = isValid ? '#2E7D32' : '#C62828';
                 status.style.fontWeight = 'bold';
                 idDisplay.appendChild(status);
@@ -512,11 +570,34 @@
                     idVisual.appendChild(box);
                 }
                 
-                // Update explanations based on the ID
-                updateExplanations(id);
-                
-                // Show checksum calculation
-                showChecksumCalculation(id);
+                // Show explanation only if valid
+                if (isValid) {
+                    // Update explanations based on the ID
+                    updateExplanations(id);
+                    
+                    // Show checksum calculation
+                    showChecksumCalculation(id);
+                } else {
+                    // Simple message for invalid ID
+                    const errorMsg = document.createElement('p');
+                    errorMsg.innerHTML = '<strong>เลขบัตรประชาชนไม่ถูกต้อง</strong><br>ตรวจสอบความถูกต้องของเลขทั้ง 13 หลัก';
+                    errorMsg.style.color = '#C62828';
+                    errorMsg.style.textAlign = 'center';
+                    errorMsg.style.margin = '20px 0';
+                    errorMsg.style.fontSize = '1.1rem';
+                    
+                    // Add error message before groups
+                    const explanationDiv = document.querySelector('.id-explanation');
+                    if (explanationDiv) {
+                        explanationDiv.prepend(errorMsg);
+                        
+                        // Hide all explanation groups
+                        const groups = document.querySelectorAll('.digit-group');
+                        groups.forEach(group => {
+                            group.style.display = 'none';
+                        });
+                    }
+                }
             }
             
             function updateExplanations(id) {
