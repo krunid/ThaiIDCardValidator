@@ -34,7 +34,6 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url('https://scontent.fbkk29-4.fna.fbcdn.net/v/t1.6435-9/162642556_4227843767303703_717323013380991519_n.png?stp=dst-png_p600x600&_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeEwdn4_l8tgIzmEdS1vWbKG9V9KNFOI6Vb1X0o0U4jpVtqiuWD9IVg1I9l5I7DtqWvVjQB8zwNYzY_P_LQDkSl6&_nc_ohc=ocT-zVWPHQ4Q7kNvgF1jNM1&_nc_oc=AdgJk3Yewsmf-TZekmWhQnqTpmLSdfkdSq4Q9XRWLLL5gX0FaBdHdkkHOtSO_aQa4Ao&_nc_zt=23&_nc_ht=scontent.fbkk29-4.fna&_nc_gid=AijcQj56J0iCEgym4nTMLac&oh=00_AYChi7OdeSrCWOEhYlszLY9lCoCaS-zyc3rggvK9M90RnA&oe=67E4BE09" >< fill="white" fill-opacity="0" /><path d="M50 15 L75 35 L75 65 L50 85 L25 65 L25 35 Z" fill="white" fill-opacity="0.03" stroke="white" stroke-opacity="0.1" stroke-width="1"/></svg>');
             background-size: 100px 100px;
             opacity: 0.6;
             z-index: 0;
@@ -178,7 +177,7 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background-color 0.3s;
-            width: 100%;
+            width: 50%;
             font-weight: bold;
         }
         
@@ -320,13 +319,15 @@
             <input type="text" id="id-input" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" maxlength="13">
         </div>
         
-        <button class="btn" id="check-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: -3px;">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-            ตรวจสอบ
-        </button>
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <button class="btn" id="check-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                ตรวจสอบ
+            </button>
+        </div>
         
         <div class="result" id="result"></div>
     </div>
