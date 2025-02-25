@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ระบบตรวจสอบเลขบัตรประชาชน</title>
+    <style>
+        :root {
+            --primary-color: #0088cc;
+            --secondary-color: #ffde59;
+            --accent-color: #e74c3c;
+            --light-bg: #e6f7ff;
+            --dark-text: #333333;
+            --light-text: #ffffff;
+        }
+        
+        body {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), #004e92);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--dark-text);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 0 var(--secondary-color);
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .input-container {
+            position: relative;
+            margin-bottom: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .id-display-container {
+            background-color: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #333;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .numpad-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+            max-width: 240px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .numpad-btn {
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 3px 3px 6px #d1d1d1,
+                        -3px -3px 6px #ffffff;
+            transition: all 0.2s ease;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transform: perspective(500px) rotateX(10deg);
+        }
+        
+        .numpad-btn:hover {
+            background: linear-gradient(145deg, #e6e6e6, #ffffff);
+            transform: perspective(500px) rotateX(10deg) translateY(-3px);
+            box-shadow: 5px 5px 10px #d1d1d1,
+                        -5px -5px 10px #ffffff;
+        }
+        
+        .numpad-btn:active {
+            background: linear-gradient(145deg, #d4d4d4, #f0f0f0);
+            transform: perspective(500px) rotateX(10deg) translateY(1px);
+            box-shadow: 1px 1px 3px #d1d1d1,
+                        -1px -1px 3px #ffffff;
+        }
+        
+        .numpad-btn.backspace {
+            font-size: 1.1rem;
+            background: linear-gradient(145deg, #a8d3ff, #cde6ff);
+            color: #0059b3;
+        }
+        
+        .numpad-btn.clear {
+            background: linear-gradient(145deg, #ff9a9a, #ffcdcd);
+            color: #c62828;
+            font-size: 1.1rem;
+        }
+        
+        .numpad-container .placeholder {
+            visibility: hidden;
+        }
+        
+        .input-group {
+            display: none;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            font-weight: bold;
+        }
+        
+        .btn:hover {
+            background-color: #006699;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--accent-color);
+        }
+        
+        .id-explanation {
+            margin-top: 20px;
+        }
+        
+        .digit-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .group-1 { background-color: #FFF9C4; }
+        .group-2-3 { background-color: #FFCCBC; }
+        .group-4-5 { background-color: #C8E6C9; }
+        .group-6-10 { background-color: #B3E5FC; }
+        .group-11-12 { background-color: #E1BEE7; }
+        .group-13 { background-color: #FFCDD2; }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .valid {
+            background-color: #C8E6C9;
+            color: #2E7D32;
+        }
+        
+        .invalid {
+            background-color: #FFCDD2;
+            color: #C62828;
+        }
+        
+        .id-visual {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 5px;
+        }
+        
+        .digit-box {
+            width: 30px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .box-1 { background-color: #FFF9C4; }
+        .box-2, .box-3 { background-color: #FFCCBC; }
+        .box-4, .box-5 { background-color: #C8E6C9; }
+        .box-6, .box-7, .box-8, .box-9, .box-10 { background-color: #B3E5FC; }
+        .box-11, .box-12 { background-color: #E1BEE7; }
+        .box-13 { background-color: #FFCDD2; }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ระบบตรวจสอบเลขบัตรประชาชน</h1>
+            <p>กรุณากรอกเลขบัตรประชาชน 13 หลัก เพื่อตรวจสอบความถูกต้อง</p>
+        </div>
+        
+        <div class="input-container">
+            <div class="id-display-container" id="id-display-input"></div>
+            
+            <div class="numpad-container">
+                <button class="numpad-btn" data-number="1">1</button>
+                <button class="numpad-btn" data-number="2">2</button>
+                <button class="numpad-btn" data-number="3">3</button>
+                <button class="numpad-btn" data-number="4">4</button>
+                <button class="numpad-btn" data-number="5">5</button>
+                <button class="numpad-btn" data-number="6">6</button>
+                <button class="numpad-btn" data-number="7">7</button>
+                <button class="numpad-btn" data-number="8">8</button>
+                <button class="numpad-btn" data-number="9">9</button>
+                <button class="numpad-btn clear" data-action="clear">C</button>
+                <button class="numpad-btn" data-number="0">0</button>
+                <button class="numpad-btn backspace" data-action="backspace">⌫</button>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label for="id-input">เลขบัตรประชาชน:</label>
+            <input type="text" id="id-input" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" maxlength="13">
+        </div>
+        
+        <button class="btn" id="check-btn">ตรวจสอบ</button>
+        
+        <div class="result" id="result"></div>
+    </div>
+    
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close" id="close-modal">&times;</span>
+            <h2>ผลการตรวจสอบเลขบัตรประชาชน</h2>
+            <div id="id-display"></div>
+            
+            <div class="id-visual" id="id-visual"></div>
+            
+            <div class="id-explanation">
+                <div class="digit-group group-1">
+                    <h3>หลักที่ 1: ประเภทบุคคล (มี 8 ประเภท)</h3>
+                    <p id="group1-explanation">ระบุประเภทของบุคคล เช่น 1 = คนไทย, 2 = คนต่างด้าวที่มีถิ่นที่อยู่ในประเทศไทย</p>
+                </div>
+                
+                <div class="digit-group group-2-3">
+                    <h3>หลักที่ 2-3: รหัสจังหวัดที่แจ้งเกิดหรือขึ้นทะเบียนบ้าน</h3>
+                    <p id="group2-3-explanation">รหัสของจังหวัดที่เป็นสถานที่แจ้งเกิดหรือที่ขึ้นทะเบียนบ้าน</p>
+                </div>
+                
+                <div class="digit-group group-4-5">
+                    <h3>หลักที่ 4-5: รหัสอำเภอหรือเทศบาลในจังหวัดนั้น</h3>
+                    <p id="group4-5-explanation">รหัสของอำเภอหรือเทศบาลในจังหวัดที่ระบุในหลักที่ 2-3</p>
+                </div>
+                
+                <div class="digit-group group-6-10">
+                    <h3>หลักที่ 6-10: กลุ่มของบุคคลแต่ละประเภทหรือเลขที่ของสูติบัตร</h3>
+                    <p id="group6-10-explanation">เป็นการจำแนกกลุ่มบุคคลแต่ละประเภทหรือเป็นเลขที่ของสูติบัตร</p>
+                </div>
+                
+                <div class="digit-group group-11-12">
+                    <h3>หลักที่ 11-12: เป็นลำดับที่ในกลุ่มบุคคลแต่ละประเภทหรือในที่ของสูติบัตรแต่ละเล่ม</h3>
+                    <p id="group11-12-explanation">ลำดับที่ของบุคคลในกลุ่มหรือในสูติบัตรแต่ละเล่ม</p>
+                </div>
+                
+                <div class="digit-group group-13">
+                    <h3>หลักที่ 13: เลขตรวจสอบความถูกต้องของเลขทั้ง 12 หลัก</h3>
+                    <p id="group13-explanation">เป็นเลขที่ใช้ในการตรวจสอบความถูกต้องของเลข 12 หลักแรก</p>
+                    <p id="checksum-calculation"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>ระบบตรวจสอบเลขบัตรประชาชน © 2025</p>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const idInput = document.getElementById('id-input');
+            const checkBtn = document.getElementById('check-btn');
+            const result = document.getElementById('result');
+            const modal = document.getElementById('modal');
+            const closeModal = document.getElementById('close-modal');
+            const idDisplay = document.getElementById('id-display');
+            const idVisual = document.getElementById('id-visual');
+            const checksumCalculation = document.getElementById('checksum-calculation');
+            const idDisplayInput = document.getElementById('id-display-input');
+            const numpadButtons = document.querySelectorAll('.numpad-btn');
+            
+            let idValue = '';
+            
+            // Handle numpad buttons
+            numpadButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.dataset.number !== undefined) {
+                        // Number button pressed
+                        if (idValue.length < 13) {
+                            idValue += this.dataset.number;
+                            updateIdDisplay();
+                        }
+                    } else if (this.dataset.action === 'clear') {
+                        // Clear button pressed
+                        idValue = '';
+                        updateIdDisplay();
+                    } else if (this.dataset.action === 'backspace') {
+                        // Backspace button pressed
+                        idValue = idValue.slice(0, -1);
+                        updateIdDisplay();
+                    }
+                    
+                    // Sync with hidden input
+                    idInput.value = idValue;
+                });
+            });
+            
+            function updateIdDisplay() {
+                // Display current ID value
+                let displayValue = idValue;
+                // Pad with underscores if needed
+                while (displayValue.length < 13) {
+                    displayValue += '_';
+                }
+                
+                // Format with spaces for readability
+                let formattedValue = '';
+                for (let i = 0; i < displayValue.length; i++) {
+                    formattedValue += displayValue[i];
+                    if (i === 0 || i === 4 || i === 9 || i === 11) {
+                        formattedValue += ' ';
+                    }
+                }
+                
+                idDisplayInput.textContent = formattedValue;
+            }
+            
+            // Initialize display
+            updateIdDisplay();
+            
+            // Only allow numbers in the input field
+            idInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                idValue = this.value;
+                updateIdDisplay();
+            });
+            
+            checkBtn.addEventListener('click', function() {
+                const idNumber = idValue;
+                
+                if (idNumber.length !== 13) {
+                    result.textContent = 'กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก';
+                    result.className = 'result invalid';
+                    result.style.display = 'block';
+                    return;
+                }
+                
+                const isValid = validateThaiID(idNumber);
+                
+                result.textContent = isValid 
+                    ? 'เลขบัตรประชาชนถูกต้อง' 
+                    : 'เลขบัตรประชาชนไม่ถูกต้อง';
+                result.className = isValid ? 'result valid' : 'result invalid';
+                result.style.display = 'block';
+                
+                // Display ID explanation
+                displayIDExplanation(idNumber, isValid);
+                
+                // Show modal
+                modal.style.display = 'flex';
+            });
+            
+            // Function to clear all input and results
+            function clearAllData() {
+                idValue = '';
+                idInput.value = '';
+                result.style.display = 'none';
+                idDisplay.innerHTML = '';
+                idVisual.innerHTML = '';
+                checksumCalculation.innerHTML = '';
+                updateIdDisplay();
+            }
+            
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+                clearAllData();
+            });
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    clearAllData();
+                }
+            });
+            
+            function validateThaiID(id) {
+                if (id.length !== 13) return false;
+                
+                let sum = 0;
+                for (let i = 0; i < 12; i++) {
+                    sum += parseInt(id.charAt(i)) * (13 - i);
+                }
+                
+                let checkDigit = (11 - (sum % 11)) % 10;
+                return checkDigit === parseInt(id.charAt(12));
+            }
+            
+            function displayIDExplanation(id, isValid) {
+                // Clear previous content
+                idDisplay.innerHTML = '';
+                idVisual.innerHTML = '';
+                
+                // Create header for the ID
+                const header = document.createElement('h3');
+                header.textContent = `เลขบัตรประชาชน: ${id}`;
+                idDisplay.appendChild(header);
+                
+                // Status message
+                const status = document.createElement('p');
+                status.textContent = isValid 
+                    ? 'สถานะ: ✅ เลขบัตรประชาชนถูกต้อง' 
+                    : 'สถานะ: ❌ เลขบัตรประชาชนไม่ถูกต้อง';
+                status.style.color = isValid ? '#2E7D32' : '#C62828';
+                status.style.fontWeight = 'bold';
+                idDisplay.appendChild(status);
+                
+                // Create visual representation of ID number
+                for (let i = 0; i < 13; i++) {
+                    const box = document.createElement('div');
+                    box.className = `digit-box box-${i+1}`;
+                    box.textContent = id.charAt(i);
+                    idVisual.appendChild(box);
+                }
+                
+                // Update explanations based on the ID
+                updateExplanations(id);
+                
+                // Show checksum calculation
+                showChecksumCalculation(id);
+            }
+            
+            function updateExplanations(id) {
+                // First digit explanation
+                const firstDigitMap = {
+                    '1': 'คนที่เกิดและมีสัญชาติไทย',
+                    '2': 'คนต่างด้าวที่มีถิ่นที่อยู่ในประเทศไทย',
+                    '3': 'คนที่มีชื่ออยู่ในทะเบียนบ้านโดยได้รับการยกเว้น',
+                    '4': 'คนที่เข้ามาอยู่ในราชอาณาจักรไทยโดยชอบด้วยกฎหมาย',
+                    '5': 'คนต่างด้าวที่ได้รับอนุญาตให้มีถิ่นที่อยู่ในประเทศไทย',
+                    '6': 'ผู้ไม่มีสัญชาติไทยที่เกิดในประเทศไทยและมีชื่ออยู่ในทะเบียนบ้าน',
+                    '7': 'บุตรของบุคคลประเภทที่ 6',
+                    '8': 'คนต่างด้าวอื่นๆ',
+                };
+                
+                const firstDigit = id.charAt(0);
+                document.getElementById('group1-explanation').textContent = 
+                    `ประเภทบุคคล: ${firstDigitMap[firstDigit] || 'ไม่ทราบประเภท'} (เลข ${firstDigit})`;
+                
+                // Province code (2nd-3rd digits)
+                const provinceCode = id.substring(1, 3);
+                const provinceName = getProvinceName(provinceCode);
+                document.getElementById('group2-3-explanation').textContent = 
+                    `รหัสจังหวัด: ${provinceCode} (${provinceName})`;
+                
+                // District code (4th-5th digits)
+                const districtCode = id.substring(3, 5);
+                const districtName = getDistrictName(provinceCode, districtCode);
+                document.getElementById('group4-5-explanation').textContent = 
+                    `รหัสอำเภอ/เขต: ${districtCode} (${districtName})`;
+                
+                // Group number (6th-10th digits)
+                const groupNumber = id.substring(5, 10);
+                document.getElementById('group6-10-explanation').textContent = 
+                    `กลุ่ม/เลขที่สูติบัตร: ${groupNumber}`;
+                
+                // Sequence number (11th-12th digits)
+                const sequenceNumber = id.substring(10, 12);
+                document.getElementById('group11-12-explanation').textContent = 
+                    `ลำดับที่: ${sequenceNumber}`;
+                
+                // Check digit (13th digit)
+                const checkDigit = id.charAt(12);
+                document.getElementById('group13-explanation').textContent = 
+                    `เลขตรวจสอบ: ${checkDigit}`;
+            }
+            
+            function getProvinceName(code) {
+                const provinces = {
+                    "10": "กรุงเทพมหานคร",
+                    "11": "สมุทรปราการ",
+                    "12": "นนทบุรี",
+                    "13": "ปทุมธานี",
+                    "14": "พระนครศรีอยุธยา",
+                    "15": "อ่างทอง",
+                    "16": "ลพบุรี",
+                    "17": "สิงห์บุรี",
+                    "18": "ชัยนาท",
+                    "19": "สระบุรี",
+                    "20": "ชลบุรี",
+                    "21": "ระยอง",
+                    "22": "จันทบุรี",
+                    "23": "ตราด",
+                    "24": "ฉะเชิงเทรา",
+                    "25": "ปราจีนบุรี",
+                    "26": "นครนายก",
+                    "27": "สระแก้ว",
+                    "30": "นครราชสีมา",
+                    "31": "บุรีรัมย์",
+                    "32": "สุรินทร์",
+                    "33": "ศรีสะเกษ",
+                    "34": "อุบลราชธานี",
+                    "35": "ยโสธร",
+                    "36": "ชัยภูมิ",
+                    "37": "อำนาจเจริญ",
+                    "38": "บึงกาฬ",
+                    "39": "หนองบัวลำภู",
+                    "40": "ขอนแก่น",
+                    "41": "อุดรธานี",
+                    "42": "เลย",
+                    "43": "หนองคาย",
+                    "44": "มหาสารคาม",
+                    "45": "ร้อยเอ็ด",
+                    "46": "กาฬสินธุ์",
+                    "47": "สกลนคร",
+                    "48": "นครพนม",
+                    "49": "มุกดาหาร",
+                    "50": "เชียงใหม่",
+                    "51": "ลำพูน",
+                    "52": "ลำปาง",
+                    "53": "อุตรดิตถ์",
+                    "54": "แพร่",
+                    "55": "น่าน",
+                    "56": "พะเยา",
+                    "57": "เชียงราย",
+                    "58": "แม่ฮ่องสอน",
+                    "60": "นครสวรรค์",
+                    "61": "อุทัยธานี",
+                    "62": "กำแพงเพชร",
+                    "63": "ตาก",
+                    "64": "สุโขทัย",
+                    "65": "พิษณุโลก",
+                    "66": "พิจิตร",
+                    "67": "เพชรบูรณ์",
+                    "70": "ราชบุรี",
+                    "71": "กาญจนบุรี",
+                    "72": "สุพรรณบุรี",
+                    "73": "นครปฐม",
+                    "74": "สมุทรสาคร",
+                    "75": "สมุทรสงคราม",
+                    "76": "เพชรบุรี",
+                    "77": "ประจวบคีรีขันธ์",
+                    "80": "นครศรีธรรมราช",
+                    "81": "กระบี่",
+                    "82": "พังงา",
+                    "83": "ภูเก็ต",
+                    "84": "สุราษฎร์ธานี",
+                    "85": "ระนอง",
+                    "86": "ชุมพร",
+                    "90": "สงขลา",
+                    "91": "สตูล",
+                    "92": "ตรัง",
+                    "93": "พัทลุง",
+                    "94": "ปัตตานี",
+                    "95": "ยะลา",
+                    "96": "นราธิวาส"
+                };
+                
+                return provinces[code] || "ไม่ทราบจังหวัด";
+            }
+            
+            function getDistrictName(provinceCode, districtCode) {
+                // เนื่องจากรหัสอำเภอมีจำนวนมาก จึงใส่ตัวอย่างบางอำเภอในกรุงเทพฯและสมุทรปราการ
+                const districts = {
+                    "10": {
+                        "01": "เขตพระนคร",
+                        "02": "เขตดุสิต",
+                        "03": "เขตหนองจอก",
+                        "04": "เขตบางรัก",
+                        "05": "เขตบางเขน",
+                        "06": "เขตบางกะปิ",
+                        "07": "เขตปทุมวัน",
+                        "08": "เขตป้อมปราบศัตรูพ่าย",
+                        "09": "เขตพระโขนง",
+                        "10": "เขตมีนบุรี",
+                        "11": "เขตลาดกระบัง",
+                        "12": "เขตยานนาวา",
+                        "13": "เขตสัมพันธวงศ์",
+                        "14": "เขตพญาไท",
+                        "15": "เขตธนบุรี",
+                        "16": "เขตบางกอกใหญ่",
+                        "17": "เขตห้วยขวาง",
+                        "18": "เขตคลองสาน",
+                        "19": "เขตตลิ่งชัน",
+                        "20": "เขตบางกอกน้อย",
+                        "21": "เขตบางขุนเทียน",
+                        "22": "เขตภาษีเจริญ",
+                        "23": "เขตหนองแขม",
+                        "24": "เขตราษฎร์บูรณะ",
+                        "25": "เขตบางพลัด",
+                        "26": "เขตดินแดง",
+                        "27": "เขตบึงกุ่ม",
+                        "28": "เขตสาทร",
+                        "29": "เขตบางซื่อ",
+                        "30": "เขตจตุจักร",
+                        "31": "เขตบางคอแหลม",
+                        "32": "เขตประเวศ",
+                        "33": "เขตคลองเตย",
+                        "34": "เขตสวนหลวง",
+                        "35": "เขตจอมทอง",
+                        "36": "เขตดอนเมือง",
+                        "37": "เขตราชเทวี",
+                        "38": "เขตลาดพร้าว",
+                        "39": "เขตวัฒนา",
+                        "40": "เขตบางแค",
+                        "41": "เขตหลักสี่",
+                        "42": "เขตสายไหม",
+                        "43": "เขตคันนายาว",
+                        "44": "เขตสะพานสูง",
+                        "45": "เขตวังทองหลาง",
+                        "46": "เขตคลองสามวา",
+                        "47": "เขตบางนา",
+                        "48": "เขตทวีวัฒนา",
+                        "49": "เขตทุ่งครุ",
+                        "50": "เขตบางบอน"
+                    },
+                    "11": {
+                        "01": "อำเภอเมืองสมุทรปราการ",
+                        "02": "อำเภอบางบ่อ",
+                        "03": "อำเภอบางพลี",
+                        "04": "อำเภอพระประแดง",
+                        "05": "อำเภอพระสมุทรเจดีย์",
+                        "06": "อำเภอบางเสาธง"
+                    },
+                    // เพิ่มข้อมูลอำเภอของจังหวัดอื่นๆ ตามต้องการ
+                };
+                
+                if (districts[provinceCode] && districts[provinceCode][districtCode]) {
+                    return districts[provinceCode][districtCode];
+                } else {
+                    return "ไม่ทราบอำเภอ";
+                }
+            }
+            
+            function showChecksumCalculation(id) {
+                let calculation = 'การคำนวณเลขตรวจสอบ (หลักที่ 13):<br>';
+                calculation += 'สูตร: (11 - (ผลรวมของเลข 12 หลักแรก × ค่าน้ำหนัก) % 11) % 10<br><br>';
+                
+                let sum = 0;
+                calculation += 'ผลรวม = ';
+                
+                for (let i = 0; i < 12; i++) {
+                    const digit = parseInt(id.charAt(i));
+                    const weight = 13 - i;
+                    const product = digit * weight;
+                    
+                    sum += product;
+                    
+                    calculation += `(${digit} × ${weight})`;
+                    if (i < 11) calculation += ' + ';
+                }
+                
+                calculation += ` = ${sum}<br>`;
+                calculation += `(11 - (${sum} % 11)) % 10 = `;
+                
+                const mod = sum % 11;
+                calculation += `(11 - ${mod}) % 10 = `;
+                
+                const checkDigit = (11 - mod) % 10;
+                calculation += `${checkDigit}`;
+                
+                // Check if the calculated check digit matches the given one
+                const givenCheckDigit = parseInt(id.charAt(12));
+                if (checkDigit === givenCheckDigit) {
+                    calculation += ' ✓ (ตรงกับหลักที่ 13)';
+                } else {
+                    calculation += ` ✗ (ไม่ตรงกับหลักที่ 13 ซึ่งเป็น ${givenCheckDigit})`;
+                }
+                
+                checksumCalculation.innerHTML = calculation;
+            }
+        });
+    </script>
+</body>
+</html>
